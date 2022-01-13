@@ -161,7 +161,7 @@ def train():
 
         if avg_loss_val < best_val_loss:
             torch.save(net.state_dict(), f"{experiment_dir}/best_val_{avg_loss_val}.pth")
-            val_dataset = avg_loss_val
+            best_val_loss = avg_loss_val
 
         print(
             f"Epoch [{epoch}/{CONFIG['train']['n_epochs']}] Avg Train Loss: {avg_loss_train}, Train Acc: {acc_train}, Avg Val Loss: {avg_loss_val}, Val Acc: {acc_val}")
