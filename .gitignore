@@ -1,18 +1,14 @@
-# Build and Release Folders
-bin-debug/
-bin-release/
-[Oo]bj/
-[Bb]in/
+.idea
+__pycache__
+todo_list.txt
 
-# Other files and folders
-.settings/
+env/__pycache__
+*_tensorboard
 
-# Executables
-*.swf
-*.air
-*.ipa
-*.apk
+sandbox.py
 
-# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
-# should NOT be excluded as they contain compiler settings and other important
-# information for Eclipse / Flash Builder.
+simple_nn/.pytest_cache
+simple_nn/__pycache__
+simple_nn/bckp_tblogs
+simple_nn/tb_logs
+simple_nn/notes.xlsx
