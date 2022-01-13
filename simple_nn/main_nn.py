@@ -1,11 +1,14 @@
 # %%
+import math
+import os
+
 import pandas as pd
 import torch
 import torch.optim as optim
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from net import Network, NetworkLSTM
-from dataset import DNNDataset, DNNDatasetPerfectYs, RNNDatasetPerfectYs, DNNDataset_90Percentage, DNNDataset_80Percentage
+from dataset import DNNDataset, RNNDataset
 from tqdm import tqdm
 import sys
 
@@ -17,8 +20,8 @@ CONFIG = {
     "tag": "windowsize=5",
     "train": {
         "lr": 0.001, # 0.001, # 3e-4,
-        "train_csv": "../../data/BloombergNRG_train.csv",
-        "val_csv": "../../data/BloombergNRG_train.csv",
+        "train_csv": "../data/BloombergNRG_train.csv",
+        "val_csv": "../data/BloombergNRG_val.csv",
         "train_bs": 32,
         "val_bs": 32,
         "n_epochs": 250
@@ -86,12 +89,15 @@ def hptuning():
 
 # %%
 def train():
+    experiment_dir = f"experiments/run_id={logger.run_id}"
+    os.makedirs(experiment_dir)
+
     train_dataset = _dataset_class(csv_file=CONFIG["train"]["train_csv"], window_size=window_size)
     train_loader = DataLoader(train_dataset, batch_size=CONFIG["train"]["train_bs"],
                               shuffle=True)
 
     val_dataset = _dataset_class(csv_file=CONFIG["train"]["val_csv"], window_size=window_size)
-    val_loader = DataLoader(train_dataset, batch_size=CONFIG["train"]["val_bs"],
+    val_loader = DataLoader(val_dataset, batch_size=CONFIG["train"]["val_bs"],
                             shuffle=False)
 
     total_steps_train_dataset = len(train_dataset)
@@ -101,6 +107,8 @@ def train():
 
     criterion = nn.BCELoss()
     optimizer = optim.Adam(net.parameters(), lr=CONFIG["train"]["lr"])
+
+    best_val_loss = math.inf
 
     for epoch in range(1, CONFIG["train"]["n_epochs"] + 1):
         net.train()
@@ -151,6 +159,10 @@ def train():
         avg_loss_val = total_loss_val / total_steps_val_dataset
         acc_val = label_output_matches_val / total_steps_val_dataset
 
+        if avg_loss_val < best_val_loss:
+            torch.save(net.state_dict(), f"{experiment_dir}/best_val_{avg_loss_val}.pth")
+            val_dataset = avg_loss_val
+
         print(
             f"Epoch [{epoch}/{CONFIG['train']['n_epochs']}] Avg Train Loss: {avg_loss_train}, Train Acc: {acc_train}, Avg Val Loss: {avg_loss_val}, Val Acc: {acc_val}")
 
@@ -160,6 +172,8 @@ def train():
         logger.write_metadata(epoch=epoch, key="validation_loss", value=total_loss_val)
         logger.write_metadata(epoch=epoch, key="validation_avg_loss", value=avg_loss_val)
         logger.write_metadata(epoch=epoch, key="validation__ACC", value=acc_val)
+
+    torch.save(net.state_dict(), f"{experiment_dir}/final.pth")
 
     print('Finished Training')
 

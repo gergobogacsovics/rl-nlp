@@ -13,9 +13,11 @@ class DNNDataset(Dataset):
         return len(self.df) - self.window_size
 
     def __getitem__(self, t):
-        return self.df.iloc[t:t+self.window_size]["roberta_large_score"].values, np.expand_dims(self.df.iloc[t+self.window_size-1]["direction"]>0, axis=0)
+        return self.df.iloc[t:t + self.window_size]["roberta_large_score"].values, np.expand_dims(
+            self.df.iloc[t + self.window_size - 1]["direction"] > 0, axis=0)
 
-class RNNDatasetPerfectYs(Dataset):
+
+class RNNDataset(Dataset):
     def __init__(self, csv_file, window_size):
         self.df = pd.read_csv(csv_file)
         self.window_size = window_size
@@ -24,8 +26,8 @@ class RNNDatasetPerfectYs(Dataset):
         return len(self.df) - self.window_size
 
     def __getitem__(self, t):
-        return np.expand_dims(self.df.iloc[t:t+self.window_size]["roberta_large_score"].values, 1), np.expand_dims(np.int(self.df.iloc[t+self.window_size-1]["direction"]>0), axis=0)
-
+        return np.expand_dims(self.df.iloc[t:t + self.window_size]["roberta_large_score"].values, 1), np.expand_dims(
+            np.int(self.df.iloc[t + self.window_size - 1]["direction"] > 0), axis=0)
 
 
 if __name__ == '__main__':

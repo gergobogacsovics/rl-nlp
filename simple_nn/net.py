@@ -32,8 +32,7 @@ class NetworkLSTM(nn.Module):
 
     def __init__(self, feature_dim, out_dim):
         super(NetworkLSTM, self).__init__()
-        # 1 input image channel, 6 output channels, 5x5 square convolution
-        # kernel
+
         self.model = nn.Sequential(
             nn.LSTM(feature_dim, 32, batch_first=True),
             ExtractLastCell(),

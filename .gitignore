@@ -12,3 +12,4 @@ simple_nn/__pycache__
 simple_nn/bckp_tblogs
 simple_nn/tb_logs
 simple_nn/notes.xlsx
+simple_nn/experiments/*
