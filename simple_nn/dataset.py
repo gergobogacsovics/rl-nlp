@@ -17,6 +17,53 @@ class DNNDataset(Dataset):
             self.df.iloc[t + self.window_size - 1]["direction"] > 0, axis=0)
 
 
+class DNNDatasetPerfectYs(Dataset):
+    def __init__(self, csv_file, window_size):
+        self.df = pd.read_csv(csv_file)
+        self.window_size = window_size
+
+    def __len__(self):
+        return len(self.df) - self.window_size
+
+    def __getitem__(self, t):
+        return self.df.iloc[t:t + self.window_size]["roberta_large_score"].values, np.expand_dims(
+            np.int(self.df.iloc[t + self.window_size - 1]["roberta_large_score"] > 0), axis=0)
+
+
+class DNNDataset_90Percentage(Dataset):
+    def __init__(self, csv_file, window_size):
+        self.df = pd.read_csv(csv_file)
+        self.window_size = window_size
+
+    def __len__(self):
+        return len(self.df) - self.window_size
+
+    def __getitem__(self, t):
+        if random() < 0.1:
+            return self.df.iloc[t:t + self.window_size]["roberta_large_score"].values, 1 - np.expand_dims(
+                np.int(self.df.iloc[t + self.window_size - 1]["roberta_large_score"] > 0), axis=0)
+        else:
+            return self.df.iloc[t:t + self.window_size]["roberta_large_score"].values, np.expand_dims(
+                np.int(self.df.iloc[t + self.window_size - 1]["roberta_large_score"] > 0), axis=0)
+
+
+class DNNDataset_80Percentage(Dataset):
+    def __init__(self, csv_file, window_size):
+        self.df = pd.read_csv(csv_file)
+        self.window_size = window_size
+
+    def __len__(self):
+        return len(self.df) - self.window_size
+
+    def __getitem__(self, t):
+        if random() < 0.2:
+            return self.df.iloc[t:t + self.window_size]["roberta_large_score"].values, 1 - np.expand_dims(
+                np.int(self.df.iloc[t + self.window_size - 1]["roberta_large_score"] > 0), axis=0)
+        else:
+            return self.df.iloc[t:t + self.window_size]["roberta_large_score"].values, np.expand_dims(
+                np.int(self.df.iloc[t + self.window_size - 1]["roberta_large_score"] > 0), axis=0)
+
+
 class RNNDataset(Dataset):
     def __init__(self, csv_file, window_size):
         self.df = pd.read_csv(csv_file)

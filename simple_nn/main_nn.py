@@ -8,7 +8,7 @@ import torch.optim as optim
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from net import Network, NetworkLSTM
-from dataset import DNNDataset, RNNDataset
+from dataset import DNNDataset, RNNDataset, DNNDatasetPerfectYs, DNNDataset_90Percentage, DNNDataset_80Percentage
 from tqdm import tqdm
 import sys
 
@@ -19,17 +19,17 @@ CONFIG = {
     "mode": "train",  # hptuning, train, test,
     "tag": "windowsize=5",
     "train": {
-        "lr": 0.001, # 0.001, # 3e-4,
+        "lr": 0.001,  # 0.001, # 3e-4,
         "train_csv": "../data/BloombergNRG_train.csv",
         "val_csv": "../data/BloombergNRG_val.csv",
         "train_bs": 32,
         "val_bs": 32,
-        "n_epochs": 250
+        "n_epochs": 100
     }
 }
 
 _dataset_class = DNNDataset
-window_size=5 # DNN-nél: 5, RNN: 1 (because that is rolled)
+window_size = 5  # DNN-nél: 5, RNN: 1 (because that is rolled)
 
 logger = TensorboardLoggerSimple(log_dir="tb_logs", run_name=f'{CONFIG["mode"]}_{CONFIG["tag"]}')
 
